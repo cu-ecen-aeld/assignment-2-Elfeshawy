@@ -1,35 +1,40 @@
-#include<syslog.h>
-#include<stdio.h>
+// finder-app/writer.c
 
-int main(int argc, char **argv){    
+#include <stdio.h>
+#include <stdlib.h>
+#include <syslog.h>
 
-    openlog("", LOG_PID, LOG_USER);
-
-    if(argc < 3){
-        syslog(LOG_ERR, "String argument not found");
-        closelog();
-        return 1;
+int main(int argc, char *argv[]) {
+    // Check the number of command-line arguments
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s <writefile> <writestr>\n", argv[0]);
+        exit(EXIT_FAILURE);
     }
 
-    // char *writefile = argv[1];
+    // Extract command-line arguments
+    char *writefile = argv[1];
     char *writestr = argv[2];
 
-    FILE *file;
-    file  = fopen (argv[1], "w");
-    if(!file){
-        syslog(LOG_ERR, "directory not found");
-        // fclose(file);
-        closelog();
-        return 1;
+    // Open the file for writing
+    FILE *file = fopen(writefile, "w");
+    if (file == NULL) {
+        // Log error using syslog and exit
+        syslog(LOG_ERR, "Error creating/writing file %s", writefile);
+        perror("fopen");
+        exit(EXIT_FAILURE);
     }
-    syslog(LOG_DEBUG,  "Writing %s to %s", argv[2], argv[1]);
-    fprintf(file, argv[2]);
+
+    // Write the string to the fileee
+    fprintf(file, "%s\n", writestr);
+
+    // Log the write operation using syslog
+    syslog(LOG_DEBUG, "Writing '%s' to '%s'", writestr, writefile);
+
+    // Close the file
     fclose(file);
 
-
-
-
+    // Close syslog connection
     closelog();
+
     return 0;
 }
-

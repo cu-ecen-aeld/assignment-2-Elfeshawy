@@ -1,13 +1,23 @@
-CC = gcc
-file = writer.c
+# Makefile for writer application
 
-ifdef CROSS_COMPILER
-	compile = $(CROSS_COMPILER)$(CC)
+# Compiler and compilation options
+CC = gcc
+CFLAGS = -Wall -Wextra
+
+# Default target: Build the "writer" application
+all: writer
+
+# Target to build the "writer" application
+writer: writer.c
+	$(CC) $(CFLAGS) -o writer writer.c
+
+# Target to clean the project
+clean:
+	rm -f writer
+
+# Cross-compilation support 
+ifdef CROSS_COMPILE
+	CC := $(CROSS_COMPILE)gcc
 endif
 
-default: writer.c 				#The prerequisites are also file names, separated by spaces. These files need to exist before the commands for the target are run. These are also called dependencies
-	$(CC) $(file) -o writer
-
-clean:
-	# rm *.o
-	rm writer
+.PHONY: all clean
